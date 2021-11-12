@@ -65,6 +65,8 @@ ns ns0 HTTP://www.example.com/schemas
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<wsc:consume operation="GET_Hotels_GET" doc:name="Consume" doc:id="9c95b65b-6710-4056-a575-56d12385de24" config-ref="Web_Service_Consumer_Config"/>
+		<wsc:consume operation="GET_Hotels_GET" doc:name="Consume" doc:id="9c95b65b-6710-4056-a575-56d12385de24" config-ref="Web_Service_Consumer_Config">
+			<error-mapping targetType="APP:CONSUME_WSDL" />
+		</wsc:consume>
 	</flow>
 </mule>

@@ -25,5 +25,8 @@ http://www.mulesoft.org/schema/mule/indigo-flight-api http://www.mulesoft.org/sc
 		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="3e153089-8260-4bfc-881e-279bbda8055d" type="APP:INVALID_REQUEST">
 			<set-payload value='#["message": "The Request URL for car booking is not working"]' doc:name="Set Payload" doc:id="c098789c-5951-4ba7-b175-d735d61e89a3" />
 		</on-error-continue>
+		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="591b89d6-9e16-4f70-a3a9-ecc81e7beec6" type="APP:CONSUME_WSDL">
+			<set-payload value='#["message": "ERROR while consuming the hotel wsdl"]' doc:name="Set Payload" doc:id="41442cc2-b454-47d1-a4e5-c6ae5063e2b6" />
+		</on-error-continue>
 	</error-handler>
 </mule>
