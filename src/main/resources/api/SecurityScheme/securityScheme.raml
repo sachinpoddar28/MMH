@@ -1,0 +1,12 @@
+#%RAML 1.0 SecurityScheme
+type: x-token-authorize
+description: This will force to have token in incoming request
+describedBy:
+  headers:
+    client_id:
+      type: string
+    client_secret:
+      type: string
+  responses:
+    401:
+      description: 401-authorized access

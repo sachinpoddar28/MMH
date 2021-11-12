@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:indigo-flight-api="http://www.mulesoft.org/schema/mule/indigo-flight-api" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/indigo-flight-api http://www.mulesoft.org/schema/mule/indigo-flight-api/current/mule-indigo-flight-api.xsd">
+	<flow name="getFlights" doc:id="23fbdfbd-d9e9-414d-94ad-786072447134" >
+		<http:listener doc:name="Listener" doc:id="ec359afb-e133-46f0-9a42-018c209b13bc" config-ref="HTTP_Listener_config" path="/flight">
+			<http:response >
+				<http:body ><![CDATA[#[output application/json --- payload]]]></http:body>
+			</http:response>
+		</http:listener>
+		<choice doc:name="Choice" doc:id="beb30f3d-1ffa-4fd7-92f1-22f7c1844353" >
+			<when expression="#[attributes.queryParams.orig != null and attributes.queryParams.dest != null]">
+				<indigo-flight-api:get-flights doc:name="Get flights" doc:id="3d81de5e-5625-4df7-a281-dcf459fdab6b" config-ref="INDIGO_Flight_API_Config" dest="#[attributes.queryParams.dest]" orig="#[attributes.queryParams.orig]" client-id="${flight.client_id}" client-secret="${flight.client_secret}" />
+			</when>
+			<when expression='#[attributes.queryParams.id != null and attributes.queryParams.book == "yes"]'>
+				<indigo-flight-api:get-books-by-id doc:name="Get books by id" doc:id="f27d3406-d4ea-42b1-90b8-d4925aa3f94c" config-ref="INDIGO_Flight_API_Config" id="#[attributes.queryParams.id]"/>
+			</when>
+			<when expression='#[attributes.queryParams.id != null]'>
+				<indigo-flight-api:get-flight-by-id doc:name="Get flight by id" doc:id="0bfb0f8a-a808-4adc-b4f2-b3961eaab5d7" config-ref="INDIGO_Flight_API_Config" id="#[attributes.queryParams.id]" />
+			</when>
+			<otherwise >
+				<raise-error doc:name="Raise error" doc:id="fcc0e9ec-47e8-4953-9a2b-989d8f7bf254" type="APP:MISSING_QUERYPARAMS" description="The api is missing query params"/>
+			</otherwise>
+		</choice>
+	</flow>
+</mule>

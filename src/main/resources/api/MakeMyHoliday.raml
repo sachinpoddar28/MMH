@@ -1,0 +1,48 @@
+#%RAML 1.0
+title: MainFlow
+protocols:
+  - HTTP
+
+version: 1.0
+
+mediaType:
+  - application/json
+
+traits:
+  errors: !include exchange_modules/297418b7-e05d-40e3-8c9c-98eac8667dbb/errorresponsetrait/1.0.1/errorresponsetrait.raml
+
+securitySchemes:
+  customSecurityScheme: !include SecurityScheme/securityScheme.raml
+
+securedBy:
+  - customSecurityScheme
+
+
+/makemyholiday:
+  /coupon:
+    is: errors
+    get:
+      description: This is used to get coupon as per your trip price.
+      responses:
+        200:
+          body:
+            application/json:
+              example: !include Example/couponExample.raml
+  /{type}:
+    is: errors
+    description: This Api is used to get trip details.
+    uriParameters:
+      type:
+        enum:
+          - flight
+          - car
+          - hotel
+    get:
+      responses:
+        200:
+          body:
+            application/json:
+              example:
+                {message: Data Fetch Successfully}
+                  
+
