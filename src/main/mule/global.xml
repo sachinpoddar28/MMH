@@ -22,5 +22,8 @@ http://www.mulesoft.org/schema/mule/indigo-flight-api http://www.mulesoft.org/sc
 		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="a8c5ec92-c60e-423f-9393-fbf6b5d2dcd0" type="APP:MISSING_QUERYPARAMS">
 			<set-payload value='#["message": "The URL is missing necessary query paramiters"]' doc:name="Set Payload" doc:id="e4271f88-7e32-4b93-97c1-e7bab3cca12f" />
 		</on-error-continue>
+		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="3e153089-8260-4bfc-881e-279bbda8055d" type="APP:INVALID_REQUEST">
+			<set-payload value='#["message": "The Request URL for car booking is not working"]' doc:name="Set Payload" doc:id="c098789c-5951-4ba7-b175-d735d61e89a3" />
+		</on-error-continue>
 	</error-handler>
 </mule>

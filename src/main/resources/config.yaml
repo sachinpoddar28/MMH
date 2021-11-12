@@ -2,6 +2,8 @@ hotel:
   wsdl: "http://hotelbooking.us-e2.cloudhub.io//TajGroup/default_Port?wsdl"
   service: "TajGroup"
   port: "default_Port"
+  client_id : "1234"
+  client_secret: "1234"
   
 car:
   url: "carbooking.us-e2.cloudhub.io"

@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:indigo-flight-api="http://www.mulesoft.org/schema/mule/indigo-flight-api" xmlns:http="http://www.mulesoft.org/schema/mule/http"
-	xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc"
-	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:indigo-flight-api="http://www.mulesoft.org/schema/mule/indigo-flight-api"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-http://www.mulesoft.org/schema/mule/indigo-flight-api http://www.mulesoft.org/schema/mule/indigo-flight-api/current/mule-indigo-flight-api.xsd">
-	<flow name="getFlights" doc:id="23fbdfbd-d9e9-414d-94ad-786072447134" >
+http://www.mulesoft.org/schema/mule/indigo-flight-api http://www.mulesoft.org/schema/mule/indigo-flight-api/current/mule-indigo-flight-api.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="flightBooking" doc:id="23fbdfbd-d9e9-414d-94ad-786072447134" >
 		<http:listener doc:name="Listener" doc:id="ec359afb-e133-46f0-9a42-018c209b13bc" config-ref="HTTP_Listener_config" path="/flight">
 			<http:response >
 				<http:body ><![CDATA[#[output application/json --- payload]]]></http:body>
@@ -26,5 +27,44 @@ http://www.mulesoft.org/schema/mule/indigo-flight-api http://www.mulesoft.org/sc
 				<raise-error doc:name="Raise error" doc:id="fcc0e9ec-47e8-4953-9a2b-989d8f7bf254" type="APP:MISSING_QUERYPARAMS" description="The api is missing query params"/>
 			</otherwise>
 		</choice>
+		<logger level="INFO" doc:name="Logger" doc:id="c686ed82-bdfb-4d4d-bf78-c807d1efe43d" message="The flight booking api is working fine"/>
+	</flow>
+	<flow name="carBooking" doc:id="6460750c-10bf-40d1-8fbb-fa5e099026f5" >
+		<http:listener doc:name="Listener" doc:id="6c7019cb-8ad6-4412-8bb0-1d506a5c7c77" config-ref="HTTP_Listener_config" path="/car"/>
+		<http:request method="GET" doc:name="Request" doc:id="ac7c471c-ad90-407a-a8d0-d5d5eb6836b9" config-ref="HTTP_Request_Car" path="/carBooking">
+			<error-mapping targetType="APP:INVALID_REQUEST" />
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"orig" : attributes.queryParams.orig,
+	"dest" : attributes.queryParams.dest
+}]]]></http:query-params>
+		</http:request>
+		<logger level="INFO" doc:name="Logger" doc:id="d1775a10-054b-4787-9476-9d5dbbe63f99" message="The car booking api is working fine"/>
+	</flow>
+	<flow name="implementFlow" doc:id="68e36291-cfb5-4531-8667-5f2d10dc0de5" >
+		<http:listener doc:name="Listener" doc:id="c2f9391c-1c9d-43f1-9722-138a36e86441" config-ref="HTTP_Listener_config" path="/hotel">
+			<http:response >
+				<http:body ><![CDATA[#[output application/json --- payload]]]></http:body>
+			</http:response>
+		</http:listener>
+		<set-variable value="${hotel.client_id}" doc:name="client_id" doc:id="5e9ff1b4-85b5-4bc4-8d76-97be20eefa26" variableName="client_id"/>
+		<set-variable value="${hotel.client_secret}" doc:name="client_secret" doc:id="b921ad8b-0f9f-4a9a-99bb-19f66f3334a3" variableName="client_secret"/>
+		<ee:transform doc:name="Transform Message" doc:id="97ec6e53-7e1a-4220-bb9e-7d56c9aba5c8" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 HTTP://www.example.com/schemas
+---
+{
+	ns0#GET_Hotels_GET_InputMessage: {
+		city: attributes.queryParams.city,
+		client_id: vars.client_id,
+		client_secret: vars.client_secret
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<wsc:consume operation="GET_Hotels_GET" doc:name="Consume" doc:id="9c95b65b-6710-4056-a575-56d12385de24" config-ref="Web_Service_Consumer_Config"/>
 	</flow>
 </mule>
