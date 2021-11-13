@@ -2,12 +2,12 @@ pipeline
 {
 	agent any
 	stages{
-		state('Build Application'){
+		stage('Build Application'){
 			steps{
 				bat 'mvn clean install'
 			}
 		}
-		state('Deploy Application'){
+		stage('Deploy Application'){
 			steps{
 				bat 'mvn package deploy -DmuleDeploy'
 			}
