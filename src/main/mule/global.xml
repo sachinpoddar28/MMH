@@ -28,5 +28,8 @@ http://www.mulesoft.org/schema/mule/indigo-flight-api http://www.mulesoft.org/sc
 		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="591b89d6-9e16-4f70-a3a9-ecc81e7beec6" type="APP:CONSUME_WSDL">
 			<set-payload value='#["message": "ERROR while consuming the hotel wsdl"]' doc:name="Set Payload" doc:id="41442cc2-b454-47d1-a4e5-c6ae5063e2b6" />
 		</on-error-continue>
+		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="bc0ce6a1-114c-4cff-9df2-6510a1670326" type="APP:INVALID_URI_PARAMS">
+			<set-payload value='#["message": "Invalid URI params"]' doc:name="Set Payload" doc:id="2b128a5f-6a41-4e1d-8f7d-07f411232ccc" />
+		</on-error-continue>
 	</error-handler>
 </mule>

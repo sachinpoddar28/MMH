@@ -8,7 +8,7 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 http://www.mulesoft.org/schema/mule/indigo-flight-api http://www.mulesoft.org/schema/mule/indigo-flight-api/current/mule-indigo-flight-api.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 	<flow name="flightBooking" doc:id="23fbdfbd-d9e9-414d-94ad-786072447134" >
-		<http:listener doc:name="Listener" doc:id="ec359afb-e133-46f0-9a42-018c209b13bc" config-ref="HTTP_Listener_config" path="/flight">
+		<http:listener doc:name="Listener" doc:id="ec359afb-e133-46f0-9a42-018c209b13bc" config-ref="HTTP_Listener_config" path="/api/makemyholiday/flight">
 			<http:response >
 				<http:body ><![CDATA[#[output application/json --- payload]]]></http:body>
 			</http:response>
@@ -18,20 +18,20 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 				<indigo-flight-api:get-flights doc:name="Get flights" doc:id="3d81de5e-5625-4df7-a281-dcf459fdab6b" config-ref="INDIGO_Flight_API_Config" dest="#[attributes.queryParams.dest]" orig="#[attributes.queryParams.orig]" client-id="${flight.client_id}" client-secret="${flight.client_secret}" />
 			</when>
 			<when expression='#[attributes.queryParams.id != null and attributes.queryParams.book == "yes"]'>
-				<indigo-flight-api:get-books-by-id doc:name="Get books by id" doc:id="f27d3406-d4ea-42b1-90b8-d4925aa3f94c" config-ref="INDIGO_Flight_API_Config" id="#[attributes.queryParams.id]"/>
+				<indigo-flight-api:get-books-by-id doc:name="Book flight by id" doc:id="f27d3406-d4ea-42b1-90b8-d4925aa3f94c" config-ref="INDIGO_Flight_API_Config" id="#[attributes.queryParams.id]"/>
 			</when>
 			<when expression='#[attributes.queryParams.id != null]'>
 				<indigo-flight-api:get-flight-by-id doc:name="Get flight by id" doc:id="0bfb0f8a-a808-4adc-b4f2-b3961eaab5d7" config-ref="INDIGO_Flight_API_Config" id="#[attributes.queryParams.id]" />
 			</when>
 			<otherwise >
-				<raise-error doc:name="Raise error" doc:id="fcc0e9ec-47e8-4953-9a2b-989d8f7bf254" type="APP:MISSING_QUERYPARAMS" description="The api is missing query params"/>
+				<raise-error doc:name="Raise error" doc:id="fcc0e9ec-47e8-4953-9a2b-989d8f7bf254" type="APP:MISSING_QUERYPARAMS" description="The api is missing necessary query params"/>
 			</otherwise>
 		</choice>
 		<logger level="INFO" doc:name="Logger" doc:id="c686ed82-bdfb-4d4d-bf78-c807d1efe43d" message="The flight booking api is working fine"/>
 	</flow>
 	<flow name="carBooking" doc:id="6460750c-10bf-40d1-8fbb-fa5e099026f5" >
-		<http:listener doc:name="Listener" doc:id="6c7019cb-8ad6-4412-8bb0-1d506a5c7c77" config-ref="HTTP_Listener_config" path="/car"/>
-		<http:request method="GET" doc:name="Request" doc:id="ac7c471c-ad90-407a-a8d0-d5d5eb6836b9" config-ref="HTTP_Request_Car" path="/carBooking">
+		<http:listener doc:name="Listener" doc:id="6c7019cb-8ad6-4412-8bb0-1d506a5c7c77" config-ref="HTTP_Listener_config" path="/api/makemyholiday/car"/>
+		<http:request method="GET" doc:name="RequestCar" doc:id="ac7c471c-ad90-407a-a8d0-d5d5eb6836b9" config-ref="HTTP_Request_Car" path="/carBooking">
 			<error-mapping targetType="APP:INVALID_REQUEST" />
 			<http:query-params ><![CDATA[#[output application/java
 ---
@@ -42,17 +42,19 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 		</http:request>
 		<logger level="INFO" doc:name="Logger" doc:id="d1775a10-054b-4787-9476-9d5dbbe63f99" message="The car booking api is working fine"/>
 	</flow>
-	<flow name="implementFlow" doc:id="68e36291-cfb5-4531-8667-5f2d10dc0de5" >
-		<http:listener doc:name="Listener" doc:id="c2f9391c-1c9d-43f1-9722-138a36e86441" config-ref="HTTP_Listener_config" path="/hotel">
+	<flow name="hotelFlow" doc:id="68e36291-cfb5-4531-8667-5f2d10dc0de5" >
+		<http:listener doc:name="Listener" doc:id="c2f9391c-1c9d-43f1-9722-138a36e86441" config-ref="HTTP_Listener_config" path="/api/makemyholiday/hotel">
 			<http:response >
 				<http:body ><![CDATA[#[output application/json --- payload]]]></http:body>
 			</http:response>
 		</http:listener>
 		<set-variable value="${hotel.client_id}" doc:name="client_id" doc:id="5e9ff1b4-85b5-4bc4-8d76-97be20eefa26" variableName="client_id"/>
 		<set-variable value="${hotel.client_secret}" doc:name="client_secret" doc:id="b921ad8b-0f9f-4a9a-99bb-19f66f3334a3" variableName="client_secret"/>
-		<ee:transform doc:name="Transform Message" doc:id="97ec6e53-7e1a-4220-bb9e-7d56c9aba5c8" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
+		<choice doc:name="Choice" doc:id="2c78f843-25bc-4e85-a33a-4bfe3b351212" >
+			<when expression="#[attributes.queryParams.city != null and attributes.queryParams.id == null and attributes.queryParams.book == null]">
+				<ee:transform doc:name="getHotelQP" doc:id="b524d079-4d62-4993-8b08-31c7b25bfa30">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
 output application/xml
 ns ns0 HTTP://www.example.com/schemas
 ---
@@ -63,10 +65,68 @@ ns ns0 HTTP://www.example.com/schemas
 		client_secret: vars.client_secret
 	}
 }]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
-		<wsc:consume operation="GET_Hotels_GET" doc:name="Consume" doc:id="9c95b65b-6710-4056-a575-56d12385de24" config-ref="Web_Service_Consumer_Config">
-			<error-mapping targetType="APP:CONSUME_WSDL" />
-		</wsc:consume>
+					</ee:message>
+				</ee:transform>
+				<wsc:consume operation="GET_Hotels_GET" doc:name="getHotel" doc:id="32908a66-e84a-4b19-91f9-c715c92ead4c" config-ref="Web_Service_Consumer_Config">
+					<error-mapping targetType="APP:CONSUME_WSDL" />
+				</wsc:consume>
+			</when>
+			<when expression="#[attributes.queryParams.city != null and attributes.queryParams.id != null and attributes.queryParams.book == null]">
+				<ee:transform doc:name="getHotelByIdQP" doc:id="0900a48f-68e3-4a4f-8aa8-e8ded6dc4af6">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+ns ns0 HTTP://www.example.com/schemas
+---
+{
+	ns0#GET_HotelsBookById_GET_InputMessage: {
+		id: attributes.queryParams.id
+	}
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<wsc:consume operation="GET_HotelsBookById_GET" doc:name="getHotelByID" doc:id="645bacc3-ba38-4b21-a9d0-047debef4a9c" config-ref="Web_Service_Consumer_Config" >
+					<error-mapping targetType="APP:CONSUME_WSDL" />
+				</wsc:consume>
+			</when>
+			<when expression='#[attributes.queryParams.city == null and attributes.queryParams.id != null and attributes.queryParams.book == "yes"]'>
+				<ee:transform doc:name="bookHotelQP" doc:id="fe577a08-6357-46bc-b0c6-8647243d8681">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+ns ns0 HTTP://www.example.com/schemas
+---
+{
+	ns0#GET_HotelsBookById_GET_InputMessage: {
+		id: attributes.queryParams.id
+	}
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<wsc:consume operation="GET_HotelsBookById_GET" doc:name="bookHotel" doc:id="6b8f32c7-cfa6-4d1b-8791-77e8480022d3" config-ref="Web_Service_Consumer_Config" >
+					<error-mapping targetType="APP:CONSUME_WSDL" />
+				</wsc:consume>
+			</when>
+			<otherwise>
+				<raise-error doc:name="Raise error" doc:id="b8c0d3ce-a0cb-4a57-b275-81c2d7757d82" type="APP:MISSING_QUERYPARAMS" description="The api is missing necessary query params"/>
+			</otherwise>
+		</choice>
+	</flow>
+	<flow name="triggerFlow" doc:id="c0d43200-fea9-4c64-877e-f886e4f24594" >
+		<choice doc:name="Choice" doc:id="6ced059f-cee9-405f-9d07-8cc38bcdf2a4" >
+			<when expression='#[vars.item == "flight"]'>
+				<flow-ref doc:name="flightBooking" doc:id="b7a4d5a0-a217-478c-b665-5bf0bd9b0c7e" name="flightBooking"/>
+			</when>
+			<when expression='#[vars.item == "hotel"]'>
+				<flow-ref doc:name="hotelFlow" doc:id="c707cbb1-87a7-4dfe-bd71-2688a654bfaf" name="hotelFlow"/>
+			</when>
+			<when expression='#[vars.item == "car"]'>
+				<flow-ref doc:name="carBooking" doc:id="d8583561-d4cf-4c4b-9318-e15cd4fc8a51" name="carBooking"/>
+			</when>
+			<otherwise >
+				<raise-error doc:name="Raise error" doc:id="3ff9b2ed-b280-4d1c-b168-09e14486311c" type="APP:INVALID_URI_PARAMS"/>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="Logger" doc:id="198f8318-d85e-4b07-a6ce-4ecb4dd05634" message="MakeMyHoliday API successfully completed"/>
 	</flow>
 </mule>
