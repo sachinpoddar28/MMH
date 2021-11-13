@@ -9,7 +9,7 @@ pipeline
 		}
 		stage('Deploy Application'){
 			steps{
-				bat 'mvn package deploy -DmuleDeploy -Dusername=makeMyHoliday -Dpassword=makeMyHoliday1 -X'
+				bat 'mvn package deploy -DmuleDeploy -Dusername="makeMyHoliday" -Dpassword="makeMyHoliday1" -X'
 			}
 		}
 	}
