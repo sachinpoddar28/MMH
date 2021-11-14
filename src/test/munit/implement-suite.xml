@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="implement-suite.xml" />
+	<munit:test name="flightBooking-test" doc:id="4f947197-4f76-481a-aad9-63ebb9f57e9f" >
+		<munit:behavior >
+			<munit:set-event doc:name="Set Input" doc:id="a6ec2eaa-9975-4c0d-8e17-79c3fcd21ca4" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://flightBookingtest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://flightBookingtest\set-event_attributes.dwl')]" />
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to flightBooking" doc:id="b5f55ac3-fbd5-477c-ae2f-737b4c437b86" name="flightBooking"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="90ae8302-a7a7-4d98-a726-bc457c59fddc" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import flightBookingtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+			<munit-tools:verify-call doc:name="Verify Get flights" doc:id="90db0d94-1f88-4896-a3f7-81b2f4632fc8" processor="indigo-flight-api:get-flights" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="3d81de5e-5625-4df7-a281-dcf459fdab6b" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Logger" doc:id="b310c197-7792-4a9e-a2e1-22ab34bea68a" processor="logger" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="c686ed82-bdfb-4d4d-bf78-c807d1efe43d" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="flightBooking-test1" doc:id="e4b6b147-cdf2-439b-8e2d-4bf808df1914" >
+		<munit:behavior >
+			<munit:set-event doc:name="Set Input" doc:id="a679ddb3-e6a6-43f8-ae35-a09d688547b7" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://flightBookingtest1\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://flightBookingtest1\set-event_attributes.dwl')]" />
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to flightBooking" doc:id="d1a4b671-d7ac-4af5-961c-9694b6623b67" name="flightBooking"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="feb3b57f-01f4-42ca-8b22-25bc37f936b4" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import flightBookingtest1::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+			<munit-tools:verify-call doc:name="Verify Get flight by id" doc:id="f718b23f-31b3-4f46-8887-9e0a41570daa" processor="indigo-flight-api:get-flight-by-id" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="0bfb0f8a-a808-4adc-b4f2-b3961eaab5d7" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Logger" doc:id="3ca8733d-5477-4f6b-9751-29c049ee006b" processor="logger" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="c686ed82-bdfb-4d4d-bf78-c807d1efe43d" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="flightBooking-test2" doc:id="a379c4d5-4a87-4c8d-85d4-72bd5559fe4a" >
+		<munit:behavior >
+			<munit:set-event doc:name="Set Input" doc:id="5437e681-42df-41d9-ae35-f0e12dbbccb6" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://flightBookingtest2\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://flightBookingtest2\set-event_attributes.dwl')]" />
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to flightBooking" doc:id="3fdb2d3f-8642-426a-b276-43394dd92330" name="flightBooking"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="629d6438-6a1b-4b47-97cc-e961c66da023" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import flightBookingtest2::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+			<munit-tools:verify-call doc:name="Verify Book flight by id" doc:id="616d6333-c154-432a-9de8-a3e61de66f48" processor="indigo-flight-api:get-books-by-id" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="f27d3406-d4ea-42b1-90b8-d4925aa3f94c" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Logger" doc:id="29c5709a-7c03-482a-a70b-96a0ec01aa75" processor="logger" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="c686ed82-bdfb-4d4d-bf78-c807d1efe43d" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="carBooking-test" doc:id="d915a816-e0b3-4d73-abb3-3f507274b131" >
+		<munit:behavior >
+			<munit:set-event doc:name="Set Input" doc:id="b1c24d67-4c20-4ebb-baf8-c10a570ffac7" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://carBookingtest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://carBookingtest\set-event_attributes.dwl')]" />
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to carBooking" doc:id="904e5b8e-34b1-499b-ab38-4fad7ccd3437" name="carBooking"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="acef4ce4-85da-49dd-b25f-4548fbc779b2" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import carBookingtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+			<munit-tools:verify-call doc:name="Verify Is true" doc:id="67608ecd-c5e3-43fa-a7ef-2a3c0f2a4753" processor="validation:is-true" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="cc99b416-9cf6-45e5-963f-7c07de53782d" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Is true" doc:id="5c73e15f-08dc-4cbe-8cf3-7c2599525c67" processor="validation:is-true" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="1c417bab-b1d5-436b-b7cf-f73ab50b2f75" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Logger" doc:id="ee09244a-fb4a-4662-a8e9-63ede795f205" processor="logger" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="d1775a10-054b-4787-9476-9d5dbbe63f99" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify RequestCar" doc:id="8bda5eae-9289-4cd7-b51c-350d8cc72a19" processor="http:request" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="ac7c471c-ad90-407a-a8d0-d5d5eb6836b9" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>
