@@ -4,7 +4,7 @@ pipeline
 	stages{
 		stage('Build Application'){
 			steps{
-				bat 'mvn clean install'
+				bat 'mvn clean install -Dmunit.failIfNoTests=false'
 			}
 		}
 		stage('Test MUnit'){
