@@ -11,7 +11,7 @@ http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mu
 	<flow name="flightBooking" doc:id="23fbdfbd-d9e9-414d-94ad-786072447134" >
 		<choice doc:name="Choice" doc:id="beb30f3d-1ffa-4fd7-92f1-22f7c1844353" >
 			<when expression="#[attributes.queryParams.orig != null and attributes.queryParams.dest != null]">
-				<indigo-flight-api:get-flights doc:name="Get flights" doc:id="3d81de5e-5625-4df7-a281-dcf459fdab6b" config-ref="INDIGO_Flight_API_Config" dest="#[attributes.queryParams.dest]" orig="#[attributes.queryParams.orig]" client-id="${flight.client_id}" client-secret="${flight.client_secret}" />
+				<indigo-flight-api:get-flights doc:name="Get flights" doc:id="3d81de5e-5625-4df7-a281-dcf459fdab6b" config-ref="INDIGO_Flight_API_Config" dest="#[attributes.queryParams.dest]" orig="#[attributes.queryParams.orig]" client-id="#[attributes.headers['client_id']]" client-secret="#[attributes.headers['client_secret']]" />
 			</when>
 			<when expression='#[attributes.queryParams.id != null and attributes.queryParams.book == "yes"]'>
 				<indigo-flight-api:get-books-by-id doc:name="Book flight by id" doc:id="f27d3406-d4ea-42b1-90b8-d4925aa3f94c" config-ref="INDIGO_Flight_API_Config" id="#[attributes.queryParams.id]"/>
@@ -44,8 +44,8 @@ http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mu
 		<logger level="INFO" doc:name="Logger" doc:id="d1775a10-054b-4787-9476-9d5dbbe63f99" message="The car booking api is working fine"/>
 	</flow>
 	<flow name="hotelFlow" doc:id="68e36291-cfb5-4531-8667-5f2d10dc0de5" >
-		<set-variable value="${hotel.client_id}" doc:name="client_id" doc:id="5e9ff1b4-85b5-4bc4-8d76-97be20eefa26" variableName="client_id"/>
-		<set-variable value="${hotel.client_secret}" doc:name="client_secret" doc:id="b921ad8b-0f9f-4a9a-99bb-19f66f3334a3" variableName="client_secret"/>
+		<set-variable value="#[attributes.headers['client_id']]" doc:name="client_id" doc:id="5e9ff1b4-85b5-4bc4-8d76-97be20eefa26" variableName="client_id"/>
+		<set-variable value="#[attributes.headers['client_secret']]" doc:name="client_secret" doc:id="b921ad8b-0f9f-4a9a-99bb-19f66f3334a3" variableName="client_secret"/>
 		<choice doc:name="Choice" doc:id="2c78f843-25bc-4e85-a33a-4bfe3b351212" >
 			<when expression="#[attributes.queryParams.city != null and attributes.queryParams.id == null and attributes.queryParams.book == null]">
 				<ee:transform doc:name="getHotelQP" doc:id="b524d079-4d62-4993-8b08-31c7b25bfa30">

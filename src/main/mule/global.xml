@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:indigo-flight-api="http://www.mulesoft.org/schema/mule/indigo-flight-api" xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc"
-	xmlns:http="http://www.mulesoft.org/schema/mule/http"
-	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+<mule xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns:indigo-flight-api="http://www.mulesoft.org/schema/mule/indigo-flight-api"
+	xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd
-http://www.mulesoft.org/schema/mule/indigo-flight-api http://www.mulesoft.org/schema/mule/indigo-flight-api/current/mule-indigo-flight-api.xsd">
+http://www.mulesoft.org/schema/mule/indigo-flight-api http://www.mulesoft.org/schema/mule/indigo-flight-api/current/mule-indigo-flight-api.xsd
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd">
 	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="5d99e47e-5384-4177-9d8c-82de978b3bdd" >
 		<http:listener-connection host="0.0.0.0" port="8081" />
 	</http:listener-config>
@@ -18,6 +19,7 @@ http://www.mulesoft.org/schema/mule/indigo-flight-api http://www.mulesoft.org/sc
 	</wsc:config>
 	<indigo-flight-api:config name="INDIGO_Flight_API_Config" doc:name="INDIGO Flight API Config" doc:id="5f012755-f469-4243-84b9-85b1cc07cdf6" property_host="${flight.url}" property_port="${flight.port}" property_protocol="${flight.protocol}" property_basePath="/${flight.basepath}" />
 	<configuration doc:name="Configuration" doc:id="bcc64136-9e20-4185-a21d-400a28602fba" defaultErrorHandler-ref="globalError_Handler" />
+	<api-gateway:autodiscovery apiId="17427057" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="77039db5-7d46-4a65-b591-22aa356d70ea" flowRef="MakeMyHoliday-main" />
 	<error-handler name="globalError_Handler" doc:id="620a62dc-1c97-4068-835d-65581ac21629" >
 		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="a8c5ec92-c60e-423f-9393-fbf6b5d2dcd0" type="APP:MISSING_QUERYPARAMS">
 			<set-payload value='#["message": "The URL is missing necessary query paramiters"]' doc:name="Set Payload" doc:id="e4271f88-7e32-4b93-97c1-e7bab3cca12f" />
