@@ -31,5 +31,8 @@ http://www.mulesoft.org/schema/mule/indigo-flight-api http://www.mulesoft.org/sc
 		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="bc0ce6a1-114c-4cff-9df2-6510a1670326" type="APP:INVALID_URI_PARAMS">
 			<set-payload value='#["message": "Invalid URI params"]' doc:name="Set Payload" doc:id="2b128a5f-6a41-4e1d-8f7d-07f411232ccc" />
 		</on-error-continue>
+		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="45b77810-cd28-40a0-870a-1e5fb025e2ff" type="APP:INVALID_DESTINATION">
+			<set-payload value="#[error.description]" doc:name="Set Payload" doc:id="106219d1-104f-4e93-82a7-3c8097f03bc4" />
+		</on-error-continue>
 	</error-handler>
 </mule>

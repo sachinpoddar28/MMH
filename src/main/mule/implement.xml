@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:indigo-flight-api="http://www.mulesoft.org/schema/mule/indigo-flight-api"
-	xmlns:http="http://www.mulesoft.org/schema/mule/http"
-	xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:indigo-flight-api="http://www.mulesoft.org/schema/mule/indigo-flight-api"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/indigo-flight-api http://www.mulesoft.org/schema/mule/indigo-flight-api/current/mule-indigo-flight-api.xsd
-http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
 	<flow name="flightBooking" doc:id="23fbdfbd-d9e9-414d-94ad-786072447134" >
 		<http:listener doc:name="Listener" doc:id="ec359afb-e133-46f0-9a42-018c209b13bc" config-ref="HTTP_Listener_config" path="/api/makemyholiday/flight">
 			<http:response >
@@ -31,6 +32,12 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 	</flow>
 	<flow name="carBooking" doc:id="6460750c-10bf-40d1-8fbb-fa5e099026f5" >
 		<http:listener doc:name="Listener" doc:id="6c7019cb-8ad6-4412-8bb0-1d506a5c7c77" config-ref="HTTP_Listener_config" path="/api/makemyholiday/car"/>
+		<validation:is-true doc:name="Is true" doc:id="1c417bab-b1d5-436b-b7cf-f73ab50b2f75" message="INVALID origin" expression="#[['KOL','MUM','DEL','CHE',] contains attributes.queryParams.orig]">
+			<error-mapping sourceType="VALIDATION:INVALID_BOOLEAN" targetType="APP:INVALID_DESTINATION" />
+		</validation:is-true>
+		<validation:is-true doc:name="Is true" doc:id="cc99b416-9cf6-45e5-963f-7c07de53782d" expression="#[['KOL','MUM','DEL','CHE',] contains attributes.queryParams.dest]" message="INVALID destination">
+			<error-mapping sourceType="VALIDATION:INVALID_BOOLEAN" targetType="APP:INVALID_DESTINATION" />
+		</validation:is-true>
 		<http:request method="GET" doc:name="RequestCar" doc:id="ac7c471c-ad90-407a-a8d0-d5d5eb6836b9" config-ref="HTTP_Request_Car" path="/carBooking">
 			<error-mapping targetType="APP:INVALID_REQUEST" />
 			<http:query-params ><![CDATA[#[output application/java
