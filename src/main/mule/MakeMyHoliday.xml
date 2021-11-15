@@ -128,7 +128,7 @@ output application/json
 output application/json
 ---
 {
-  cuponExample: {
+  couponExample: {
     JOLLY15: "Get off 15 rupees in each trip.",
     GIFTGUIDE: "GET Amazon Gift Card in each trip.",
     RESOLUTE: "Get a chance to visit Resolute Jupiter 2.",
